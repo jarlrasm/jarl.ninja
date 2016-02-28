@@ -47,24 +47,28 @@
 
 (def load "<div>loading..<div>")
 
-(defn load-om [component page]
+(defn load-page [ page]
+  (println  (str "Load page "  page))
   (swap! app-state assoc :current page)
   (swap! app-state assoc :document load)
   (go
     (let [allpages (:pages (:site (deref app-state)))]
+        (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
         (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
+          (println  "Loaded")
             (swap! app-state assoc :document (md->html(:body response)))
       )
         )
-   )
-  (om/root component app-state
-           {:target (. js/document (getElementById "app"))}))
+   ))
 
 
+(om/root main app-state
+           {:target (. js/document (getElementById "app"))})
 (defn addpage [page]
 
+  (println  (str "Creating route /" (:resource page)))
   (defroute (str "/" (:resource page))[]
-    (load-om main (:resource page)))
+    (load-page (:resource page)))
 
   )
 (defn load-routes [pages]
@@ -76,11 +80,11 @@
     (let [response (<! (http/get "site/site.json"))]
         (swap! app-state assoc :site (:body response))
         (load-routes (:body response))
-        (secretary/dispatch! "/")
+        (println "Routes loaded. Dispatching /")
       )
  )
 
-
+(secretary/dispatch! "/")
 (let [h (History.)]
   (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
   (doto h

@@ -16,15 +16,16 @@
           [cljs.core.async :as async :refer [<!]])
    (:import goog.History))
 (def format goog.string.format)
+(defonce history (History.))
 (enable-console-print!)
 (defonce app-state (atom {:current "" :document "" :site []}))
 
 (defn nav-item [page]
-  (n/nav-item {:key (:resource page) :href (format "#/%s" (:resource page))} (:name page)))
+  (n/nav-item {:key (:resource page) :href (format "#%s" (:resource page))} (:name page)))
 
 (defn main-menu [active state]
   (n/navbar
- {:brand (d/a {:href "#/"}
+ {:brand (d/a {:href "#"}
               (:name (first (filter #( = "" (:resource %)) (:pages (:site state))))))}
  (apply n/nav
   {:collapsible? true
@@ -45,6 +46,10 @@
         ))))
 )
 
+(om/root main app-state
+           {:target (. js/document (getElementById "app"))})
+
+
 (def load "<div>loading..<div>")
 
 (defn load-page [ page]
@@ -56,14 +61,13 @@
         (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
         (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
           (println  "Loaded")
-            (swap! app-state assoc :document (md->html(:body response)))
-      )
+          (swap! app-state assoc :document (md->html(:body response)))
         )
+      )
    ))
 
 
-(om/root main app-state
-           {:target (. js/document (getElementById "app"))})
+
 (defn addpage [page]
 
   (println  (str "Creating route /" (:resource page)))
@@ -80,13 +84,11 @@
     (let [response (<! (http/get "site/site.json"))]
         (swap! app-state assoc :site (:body response))
         (load-routes (:body response))
-        (println "Routes loaded. Dispatching /")
+        (println "Routes loaded. Dispatching..")
+
+         (goog.events/listen history EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+         (doto history (.setEnabled true))
+
       )
  )
-
-(secretary/dispatch! "/")
-(let [h (History.)]
-  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
-  (doto h
-    (.setEnabled true)))
 

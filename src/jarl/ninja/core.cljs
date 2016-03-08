@@ -18,7 +18,7 @@
 (def format goog.string.format)
 (defonce history (History.))
 (enable-console-print!)
-(defonce app-state (atom {:current "" :document "" :site []}))
+(defonce app-state (atom {:current "" :document "" :class "current" :site []}))
 
 (defn nav-item [page]
   (n/nav-item {:key (:resource page) :href (format "#%s" (:resource page))} (:name page)))
@@ -35,15 +35,30 @@
   )
 )
 
-(defn main [state owner]
+(defn  content [document owner]
   (reify
     om/IRender
     (render [this]
-     (dom/div {}
-      (main-menu  (:current state) state)
       (p/panel {}
-      (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html (:document state)}} nil)
-        ))))
+      (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html document}} nil))))
+  )
+
+(defn content-wrapper  [state owner]
+
+  (reify
+    om/IRender
+    (render [this]
+    (om.dom/div #js {:className (:class state)}
+    (om/build content (:document state) {})
+    )
+    )
+  ))
+(defn main [state owner]
+    (om/component
+     (dom/div {}
+        (om/build content-wrapper state {})
+        (main-menu  (:current state) state)
+      ))
 )
 
 (om/root main app-state
@@ -54,17 +69,23 @@
 
 (defn load-page [ page]
   (println  (str "Load page "  page))
+  (swap! app-state assoc :class "out")
   (swap! app-state assoc :current page)
-  (swap! app-state assoc :document load)
+  (js/setTimeout (fn []
+  (swap! app-state assoc :class "next")
+  ;(swap! app-state assoc :document load)
   (go
     (let [allpages (:pages (:site (deref app-state)))]
         (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
         (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
           (println  "Loaded")
           (swap! app-state assoc :document (md->html(:body response)))
+          (swap! app-state assoc :class "current")
         )
       )
    ))
+  1000)
+  )
 
 
 

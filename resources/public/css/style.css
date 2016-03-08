@@ -1,2 +1,19 @@
 /* some style */
 
+.current {
+    position: absolute;
+    left: 0%;
+    width: 100%;
+    transition: all 1s ease-in-out;
+}
+.out {
+    position: absolute;
+    left: -100%;
+    width: 100%;
+    transition: all 1s ease-in-out;
+}
+.next {
+    position: absolute;
+    left: 100%;
+    width: 100%;
+}

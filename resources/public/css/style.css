@@ -13,7 +13,7 @@
 }
 .next {
     position: absolute;
-    left: 100%;
+    left: -100%;
     width: 80%;
 }
 .menu {
@@ -45,6 +45,10 @@
 .menu a:hover {
     color: #FF851B;
 }
+ .nav-menu{
+   display:none;
+ }
+
 
 @media (min-width: 650px)
 {
@@ -57,6 +61,9 @@
   }
   .current {
       left: 120px;
+  }
+  .menu .nav-handle {
+    display: none;
   }
 }
 
@@ -73,26 +80,43 @@
       top: 30px;
   }
   .menu {
-    position:fixed;;
+    position:fixed;
     top:0px;
     width:100%;
     height:30px;
-    background-color:#001f3f;
   }
-  .menu nav:hover li {
-        visibility: visible;
-        max-height: 100%;
-       background-color:#001f3f
-  }
-  .menu li {
-        visibility: hidden;
-        max-height: 0;
-  }
-  .menu nav:hover .selected{
-      background-color: #FF851B;
-  }
-  .menu .selected{
-      visibility: visible;
+   .menu  ul {
+      max-height: 0;
+      position:fixed;
+      top:30px;
+      width:100%;
+      overflow: hidden;
+    }
+
+    .menu  li {
+      visibility: hidden;
+    }
+
+    .menu .nav-handle {
+      display: block;
+      position: absolute
+      z-index: 10;
+      width:100%;
+      height:100%;
+      color: #FFFFFF;
+      text-align: center;
+    }
+
+  .nav-menu:checked ~ nav .nav-handle {
+      height:650px;
+    }
+
+  .nav-menu:checked + nav ul {
       max-height: 100%;
-  }
+      background-color:#001f3f;
+    }
+
+   .nav-menu:checked + nav li {
+      visibility: visible;
+    }
 }

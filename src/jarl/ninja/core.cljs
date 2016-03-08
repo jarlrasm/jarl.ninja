@@ -36,10 +36,12 @@
 (defn main-menu [state owner]
   (om/component
     (dom/div  #js {:className "menu"}
+        (om.dom/input #js {:type "checkbox" :className "nav-menu"  :id "nav-menu"})
        (om.dom/nav {}
          (apply om.dom/ul {}
            (om/build-all  #(nav-item {:current (:current state) :page %}) (:pages (:site state)))
           )
+        (om.dom/label #js {:htmlFor  "nav-menu" :className "nav-handle" } "Pages")
       )
     )
   )

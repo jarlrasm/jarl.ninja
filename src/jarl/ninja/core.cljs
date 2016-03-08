@@ -18,10 +18,17 @@
 (enable-console-print!)
 (defonce app-state (atom {:current "" :document "" :class "current" :site []}))
 
-(defn nav-item [page]
+(defn nav-item [state]
   (om/component
-    (om.dom/li {}
-     (dom/a #js {:href (format "#%s" (:resource page))} (:name page))
+  (let [page (:page state)]
+      (if (= (:resource page) (:current state))
+        (om.dom/li #js {:className "selected"}
+            (dom/div {} (:name page))
+             )
+        (om.dom/li {}
+            (dom/a #js {:href (format "#%s" (:resource page))} (:name page))
+         )
+        )
     )
   )
 )
@@ -31,7 +38,7 @@
     (dom/div  #js {:className "menu"}
        (om.dom/nav {}
          (apply om.dom/ul {}
-           (om/build-all  nav-item (:pages (:site state)))
+           (om/build-all  #(nav-item {:current (:current state) :page %}) (:pages (:site state)))
           )
       )
     )

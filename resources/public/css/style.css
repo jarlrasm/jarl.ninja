@@ -1,5 +1,7 @@
 /* some style */
-
+body {
+    overflow-x:hidden;
+}
 .current {
     position: absolute;
     width: 80%;
@@ -13,7 +15,7 @@
 }
 .next {
     position: absolute;
-    left: -100%;
+    left: 100%;
     width: 80%;
 }
 .menu {
@@ -82,14 +84,14 @@
   .menu {
     position:fixed;
     top:0px;
-    width:100%;
+    width:100vw;
     height:30px;
   }
    .menu  ul {
       max-height: 0;
       position:fixed;
       top:30px;
-      width:100%;
+    width:100vw;
       overflow: hidden;
     }
 
@@ -101,7 +103,7 @@
       display: block;
       position: absolute
       z-index: 10;
-      width:100%;
+    width:100vw;
       height:100%;
       color: #FFFFFF;
       text-align: center;

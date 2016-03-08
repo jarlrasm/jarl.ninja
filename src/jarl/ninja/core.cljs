@@ -1,15 +1,13 @@
 (ns ^:figwheel-always jarl.ninja.core
 (:require-macros [cljs.core.async.macros :refer [go]])
-(:require [om-bootstrap.button :as b]
-          [om-bootstrap.nav :as n]
-          [om-bootstrap.panel :as p]
+(:require
           [om-tools.dom :as d :include-macros true]
           [om.core :as om]
           [om.dom :as dom]
           [secretary.core :as secretary :refer-macros [defroute]]
           [goog.events :as events]
           [goog.events :as events]
-          [goog.string ]
+          [goog.string.format]
           [goog.history.EventType :as EventType]
           [markdown.core :refer [md->html]]
           [cljs-http.client :as http]
@@ -21,16 +19,21 @@
 (defonce app-state (atom {:current "" :document "" :class "current" :site []}))
 
 (defn nav-item [page]
-  (n/nav-item {:key (:resource page) :href (format "#%s" (:resource page))} (:name page)))
+  (om/component
+    (om.dom/li {}
+     (dom/a #js {:href (format "#%s" (:resource page))} (:name page))
+    )
+  )
+)
 
-(defn main-menu [active state]
-  (n/navbar
- {:brand (d/a {:href "#"}
-              (:name (first (filter #( = "" (:resource %)) (:pages (:site state))))))}
- (apply n/nav
-  {:collapsible? true
-   :active-key active}
-    (map nav-item (filter #(not (= "" (:resource %))) (:pages (:site state))))
+(defn main-menu [state owner]
+  (om/component
+    (dom/div  #js {:className "menu"}
+       (om.dom/nav {}
+         (apply om.dom/ul {}
+           (om/build-all  nav-item (:pages (:site state)))
+          )
+      )
     )
   )
 )
@@ -39,8 +42,7 @@
   (reify
     om/IRender
     (render [this]
-      (p/panel {}
-      (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html document}} nil))))
+      (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html document}} nil)))
   )
 
 (defn content-wrapper  [state owner]
@@ -57,7 +59,7 @@
     (om/component
      (dom/div {}
         (om/build content-wrapper state {})
-        (main-menu  (:current state) state)
+        (om/build main-menu  state {})
       ))
 )
 

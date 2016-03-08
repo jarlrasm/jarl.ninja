@@ -74,15 +74,13 @@
            {:target (. js/document (getElementById "app"))})
 
 
-(def load "<div>loading..<div>")
-
 (defn load-page [ page]
   (println  (str "Load page "  page))
   (swap! app-state assoc :class "out")
   (swap! app-state assoc :current page)
   (js/setTimeout (fn []
   (swap! app-state assoc :class "next")
-  ;(swap! app-state assoc :document load)
+  (js/setTimeout (fn []
   (go
     (let [allpages (:pages (:site (deref app-state)))]
         (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
@@ -93,6 +91,7 @@
         )
       )
    ))
+  200))
   1000)
   )
 

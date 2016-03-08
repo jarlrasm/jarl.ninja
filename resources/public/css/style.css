@@ -2,20 +2,19 @@
 
 .current {
     position: absolute;
-    left: 10%;
     width: 80%;
     transition: all 1s ease-in-out;
 }
 .out {
     position: absolute;
     left: -100%;
-    width: 0%;
+    width: 80%;
     transition: all 1s ease-in-out;
 }
 .next {
     position: absolute;
     left: 100%;
-    width: 0%;
+    width: 80%;
 }
 .menu {
    background-color:#001f3f
@@ -49,29 +48,48 @@
 
 @media (min-width: 650px)
 {
-.menu {
-  position:fixed;
-  width:100px;
-  top:0px;
-  bottom:0px;
-  right:0px;
+  .menu {
+    position:fixed;
+    width:100px;
+    top:0px;
+    bottom:0px;
+    left:0px;
+  }
+  .current {
+      left: 120px;
+  }
 }
-}
+
 @media (max-width: 650px)
 {
+  .current {
+      left: 10%;
+      top: 30px;
+  }
+  .out {
+      top: 30px;
+  }
+  .next {
+      top: 30px;
+  }
   .menu {
     position:fixed;;
-    bottom:0px;
+    top:0px;
     width:100%;
-     background-color:#001f3f;
+    height:30px;
+    background-color:#001f3f;
   }
   .menu nav:hover li {
         visibility: visible;
         max-height: 100%;
+       background-color:#001f3f
   }
   .menu li {
         visibility: hidden;
         max-height: 0;
+  }
+  .menu nav:hover .selected{
+      background-color: #FF851B;
   }
   .menu .selected{
       visibility: visible;

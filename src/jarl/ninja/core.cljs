@@ -75,13 +75,15 @@
 (om/root main app-state
            {:target (. js/document (getElementById "app"))})
 
-(defn indexof_page[allpages resource] (:index(first (filter #(= resource (:resource %)) allpages))))
+(defn indexof_page[allpages resource]
+  (:index(first (filter #(= resource (:resource %)) allpages)))
+  )
 
 
 (defn load-page [ page];;Jesus this is ugly
-  (let [appstate (deref app-state)]
-    (let [allpages (:pages (:site appstate))]
-      (let [direction (if (> (indexof_page allpages page) (indexof_page allpages (:current app-state))) :right :left )] (println direction)
+  (let [state (deref app-state)]
+    (let [allpages (:pages (:site state))]
+      (let [direction (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :right :left )]
       (println  (str "Load page "  page))
         (case direction
           :right  (swap! app-state assoc :class "out-left")
@@ -111,6 +113,16 @@
 
 
 
+(defn add-index [hash]
+  (if (:pages hash)
+    {:pages(into (vector)( map
+                           #(into (hash-map)
+                                  (apply vector  [:index %1] %2))
+                           (iterate inc (int 0))
+                           (map add-index (:pages hash))))}
+    hash
+    )
+)
 (defn addpage [page]
 
   (println  (str "Creating route /" (:resource page)))
@@ -121,15 +133,14 @@
 (defn load-routes [pages]
   (doseq [page (:pages pages)]
     (addpage page)
+    (if (:pages page) (println (:pages  page)) nil)
   )
 )
 
-(defn add-index [hash]
-  {:pages(into (vector)( map #(into (hash-map) (apply vector  [:index %1] %2)) (iterate inc (int 0)) (:pages hash)))}
-)
 
 (go
     (let [response (<! (http/get "site/site.json"))]
+      (println (add-index (:body response)))
         (swap! app-state assoc :site (add-index (:body response)))
         (load-routes (:body response))
         (println "Routes loaded. Dispatching..")

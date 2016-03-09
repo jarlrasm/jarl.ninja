@@ -75,26 +75,38 @@
 (om/root main app-state
            {:target (. js/document (getElementById "app"))})
 
+(defn indexof_page[allpages resource] (:index(first (filter #(= resource (:resource %)) allpages))))
 
-(defn load-page [ page]
-  (println  (str "Load page "  page))
-  (swap! app-state assoc :class "out")
-  (swap! app-state assoc :current page)
-  (js/setTimeout (fn []
-  (swap! app-state assoc :class "next")
-  (js/setTimeout (fn []
-  (go
-    (let [allpages (:pages (:site (deref app-state)))]
-        (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
-        (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
-          (println  "Loaded")
-          (swap! app-state assoc :document (md->html(:body response)))
-          (swap! app-state assoc :class "current")
-        )
+
+(defn load-page [ page];;Jesus this is ugly
+  (let [appstate (deref app-state)]
+    (let [allpages (:pages (:site appstate))]
+      (let [direction (if (> (indexof_page allpages page) (indexof_page allpages (:current app-state))) :right :left )] (println direction)
+      (println  (str "Load page "  page))
+        (case direction
+          :right  (swap! app-state assoc :class "out-left")
+          :left (swap! app-state assoc :class "out-right"))
+      (swap! app-state assoc :current page)
+      (js/setTimeout (fn []
+        (case direction
+          :right  (swap! app-state assoc :class "new-right")
+          :left (swap! app-state assoc :class "new-left"))
+
+        (js/setTimeout (fn []
+        (go
+              (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
+              (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
+                (println  "Loaded")
+                (swap! app-state assoc :document (md->html(:body response)))
+                (swap! app-state assoc :class "current")
+              )
+         ))
+        200))
+      1000)
       )
-   ))
-  200))
-  1000)
+
+    )
+  )
   )
 
 
@@ -110,10 +122,15 @@
   (doseq [page (:pages pages)]
     (addpage page)
   )
-  )
+)
+
+(defn add-index [hash]
+  {:pages(into (vector)( map #(into (hash-map) (apply vector  [:index %1] %2)) (iterate inc (int 0)) (:pages hash)))}
+)
+
 (go
     (let [response (<! (http/get "site/site.json"))]
-        (swap! app-state assoc :site (:body response))
+        (swap! app-state assoc :site (add-index (:body response)))
         (load-routes (:body response))
         (println "Routes loaded. Dispatching..")
 

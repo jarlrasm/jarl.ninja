@@ -7,13 +7,24 @@ body {
     width: 80%;
     transition: all 1s ease-in-out;
 }
-.out {
+.out-left {
     position: absolute;
     left: -100%;
     width: 80%;
     transition: all 1s ease-in-out;
 }
-.next {
+.new-left {
+    position: absolute;
+    left: -100%;
+    width: 80%;
+}
+.out-right {
+    position: absolute;
+    left: 100%;
+    width: 80%;
+    transition: all 1s ease-in-out;
+}
+.new-right {
     position: absolute;
     left: 100%;
     width: 80%;

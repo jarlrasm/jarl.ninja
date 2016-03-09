@@ -91,7 +91,7 @@
 
 (defn get-direction [state page path]
   (let [allpages (:pages (:site state))]
-      (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :right :left )
+      (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :up :down )
     )
   )
 (defn load-page [page path];;Jesus this is ugly
@@ -101,13 +101,18 @@
       (println  (str "Load page " (string/join "/" path ) "/" page))
         (case direction
           :right  (swap! app-state assoc :class "out-left")
-          :left (swap! app-state assoc :class "out-right"))
+          :left (swap! app-state assoc :class "out-right")
+          :up  (swap! app-state assoc :class "out-down")
+          :down (swap! app-state assoc :class "out-up"))
       (swap! app-state assoc :current page)
       (swap! app-state assoc :path path)
       (js/setTimeout (fn []
+        (swap! app-state assoc :document "")
         (case direction
           :right  (swap! app-state assoc :class "new-right")
-          :left (swap! app-state assoc :class "new-left"))
+          :left (swap! app-state assoc :class "new-left")
+          :up  (swap! app-state assoc :class "new-up")
+          :down (swap! app-state assoc :class "new-down"))
 
         (js/setTimeout (fn []
         (go

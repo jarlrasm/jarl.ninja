@@ -11,12 +11,13 @@
           [goog.history.EventType :as EventType]
           [markdown.core :refer [md->html]]
           [cljs-http.client :as http]
-          [cljs.core.async :as async :refer [<!]])
+          [cljs.core.async :as async :refer [<!]]
+          [clojure.string :as string])
    (:import goog.History))
 (def format goog.string.format)
 (defonce history (History.))
 (enable-console-print!)
-(defonce app-state (atom {:current "" :document "" :class "current" :site []}))
+(defonce app-state (atom {:current "" :path [] :document "" :class "current" :site []}))
 
 (defn nav-item [state]
   (om/component
@@ -79,16 +80,30 @@
   (:index(first (filter #(= resource (:resource %)) allpages)))
   )
 
+(defn get-page[pages page path];TODO errors?
+  (let [[element & rest] path]
+    (if element
+      (get-page (:pages (first (filter #(= element (:resource %)) pages))) page rest)
+      (first (filter #(= page (:resource %)) pages))
+    )
+  )
+)
 
-(defn load-page [ page];;Jesus this is ugly
+(defn get-direction [state page path]
+  (let [allpages (:pages (:site state))]
+      (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :right :left )
+    )
+  )
+(defn load-page [page path];;Jesus this is ugly
   (let [state (deref app-state)]
     (let [allpages (:pages (:site state))]
-      (let [direction (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :right :left )]
-      (println  (str "Load page "  page))
+      (let [direction (get-direction state page path)]
+      (println  (str "Load page " (string/join "/" path ) "/" page))
         (case direction
           :right  (swap! app-state assoc :class "out-left")
           :left (swap! app-state assoc :class "out-right"))
       (swap! app-state assoc :current page)
+      (swap! app-state assoc :path path)
       (js/setTimeout (fn []
         (case direction
           :right  (swap! app-state assoc :class "new-right")
@@ -97,7 +112,7 @@
         (js/setTimeout (fn []
         (go
               (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
-              (let [response (<! (http/get (str "site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages))))))]
+              (let [response (<! (http/get (str "site/markdown/" (:markdown(get-page allpages page path)))))]
                 (println  "Loaded")
                 (swap! app-state assoc :document (md->html(:body response)))
                 (swap! app-state assoc :class "current")
@@ -115,34 +130,33 @@
 
 (defn add-index [hash]
   (if (:pages hash)
-    {:pages(into (vector)( map
+    (assoc hash :pages (into (vector)( map
                            #(into (hash-map)
                                   (apply vector  [:index %1] %2))
                            (iterate inc (int 0))
-                           (map add-index (:pages hash))))}
+                           (map add-index (:pages hash)))))
     hash
     )
 )
-(defn addpage [page]
+(defn addpage [page prefix]
 
-  (println  (str "Creating route /" (:resource page)))
-  (defroute (str "/" (:resource page))[]
-    (load-page (:resource page)))
-
+  (println  (str "Creating route " prefix (:resource page)))
+  (defroute (str prefix (:resource page))[]
+    (load-page (:resource page) (filter #(not (string/blank? %)) (string/split prefix #"/"))))
   )
-(defn load-routes [pages]
+
+(defn load-routes [pages prefix]
   (doseq [page (:pages pages)]
-    (addpage page)
-    (if (:pages page) (println (:pages  page)) nil)
+    (addpage page prefix)
+    (if (:pages page) (load-routes  page (str prefix (:resource page) "/")) nil)
   )
 )
 
 
 (go
     (let [response (<! (http/get "site/site.json"))]
-      (println (add-index (:body response)))
         (swap! app-state assoc :site (add-index (:body response)))
-        (load-routes (:body response))
+        (load-routes (:body response) "/")
         (println "Routes loaded. Dispatching..")
 
          (goog.events/listen history EventType/NAVIGATE #(secretary/dispatch! (.-token %)))

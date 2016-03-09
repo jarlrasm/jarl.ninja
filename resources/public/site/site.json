@@ -1,7 +1,9 @@
 {
   "pages": [
     {"name": "Jarl", "resource":"", "markdown":"home.md"},
-    {"name": "About me",  "resource":"about","markdown":"about.md"},
-    {"name": "Links" , "resource":"links", "markdown": "links.md"}
+    {"name": "About me", "resource":"about","markdown":"about.md"},
+    {"name": "Links" , "resource":"links", "markdown": "links.md"},
+    {"name": "test" , "resource":"test", "markdown": "test.md",
+     "pages": [{"name": "test2" , "resource":"2", "markdown": "test2.md"} ]}
   ]
 }

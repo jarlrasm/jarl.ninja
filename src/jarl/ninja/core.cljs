@@ -116,7 +116,7 @@
   (let [old-path (:path state)]
     (if (= (count path) (count old-path) )
       (let [allpages (:pages (:site state))]
-          (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :up :down )
+          (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :down :up )
         )
 
       (if (> (count path) (count old-path))

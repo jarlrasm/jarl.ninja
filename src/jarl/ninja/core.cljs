@@ -56,47 +56,6 @@
 
 )
 
-(defn nav-item-old [state]
-  (om/component
-  (let [page (:page state)
-        current-path (:current-path state)
-        path (:path state)
-        current (:current state)]
-        (if  (empty? current-path)
-          (if (= current (:resource page))
-            (om.dom/li #js {:className (if (:pages page) "selected-with-children" "selected")}
-                (dom/div {} (:name page))
-
-                  (if (:pages page)
-                  (apply om.dom/ul {}
-                     (om/build-all  #(nav-item {:current nil :page % :path (conj path (:resource page)) :current-path  current-path}) (:pages page))
-                         )
-                    nil
-                    )
-                 )
-            (om.dom/li {}
-                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
-             )
-          )
-        (let [[current-segment & rest]current-path]
-          (if (= current-segment  (:resource page))
-            (om.dom/li #js {:className "parent"}
-
-                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
-                  (apply om.dom/ul {}
-                     (om/build-all  #(nav-item {:current current :page % :path (conj path current-segment) :current-path  rest}) (:pages page))
-                )
-                 )
-            (om.dom/li {}
-                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
-             )
-             )
-          )
-        )
-      )
-    )
-
-)
 
 (defn main-menu [state owner]
   (om/component
@@ -154,10 +113,19 @@
 )
 
 (defn get-direction [state page path]
-  (let [allpages (:pages (:site state))]
-      (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :up :down )
-    )
+  (let [old-path (:path state)]
+    (if (= (count path) (count old-path) )
+      (let [allpages (:pages (:site state))]
+          (if (> (indexof_page allpages page) (indexof_page allpages (:current  state))) :up :down )
+        )
+
+      (if (> (count path) (count old-path))
+        :right
+        :left
+        )
+     )
   )
+)
 (defn load-page [page path];;Jesus this is ugly
   (let [state (deref app-state)]
     (let [allpages (:pages (:site state))]

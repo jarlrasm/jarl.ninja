@@ -6,18 +6,18 @@
           [om.dom :as dom]
           [secretary.core :as secretary :refer-macros [defroute]]
           [goog.events :as events]
-          [goog.events :as events]
           [goog.string.format]
-          [goog.history.EventType :as EventType]
+          [goog.history.EventType]
+          [goog.events.KeyHandler.EventType]
           [markdown.core :refer [md->html]]
           [cljs-http.client :as http]
-          [cljs.core.async :as async :refer [<!]]
+          [cljs.core.async :as async :refer [put! chan <!]]
           [clojure.string :as string])
    (:import goog.History))
 (def format goog.string.format)
 (defonce history (History.))
 (enable-console-print!)
-(defonce app-state (atom {:current "" :path [] :document "" :class "current" :site []}))
+(defonce app-state (atom {:current "" :path [] :document "" :class "current" :site []}));Not happy about the :class
 
 (defn nav-item [state]
   (om/component
@@ -188,15 +188,57 @@
     (if (:pages page) (load-routes  page (str prefix (:resource page) "/")) nil)
   )
 )
+(defn pages-at-path [pages path]
+  pages;TODO
+  )
+(defn left [](println "Left"))
+(defn right[](println "Right"))
+(defn up [] ;; TODO Refaktor
+  (let [state (deref app-state)]
+    (let [allpages (pages-at-path (:pages (:site state)) (:path state))]
+      (let [current (get-page allpages (:current state) (:path state))]
+        (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
+          (if next
+            (load-page (:resource next) (:path state))
+            nil
 
+            )
+          )
+        )
+      )
+  ))
+(defn down []
+  (let [state (deref app-state)]
+    (let [allpages (pages-at-path (:pages (:site state)) (:path state))]
+      (let [current (get-page allpages (:current state) (:path state))]
+        (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
+          (if next
+            (load-page (:resource next) (:path state))
+            nil
 
+            )
+          )
+        )
+      )
+  )
+)
+(defn key-pressed [key]
+  (case key
+    37 (left)
+    39 (right)
+    38 (up)
+    40 (down)
+    nil
+  )
+)
 (go
     (let [response (<! (http/get "site/site.json"))]
         (swap! app-state assoc :site (add-index (:body response)))
         (load-routes (:body response) "/")
         (println "Routes loaded. Dispatching..")
 
-         (goog.events/listen history EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+         (goog.events/listen history goog.history.EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+         (goog.events/listen  js/document "keydown" #( key-pressed(.-keyCode (.-event_ %))))
          (doto history (.setEnabled true))
 
       )

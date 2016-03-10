@@ -21,17 +21,81 @@
 
 (defn nav-item [state]
   (om/component
-  (let [page (:page state)]
-      (if (= (:resource page) (:current state))
-        (om.dom/li #js {:className "selected"}
-            (dom/div {} (:name page))
+  (let [page (:page state)
+        current-path (:current-path state)
+        path (:path state)
+        current (:current state)
+        classname (if (nil? current-path)
+                    "children"
+                   (if (empty? current-path)
+                    (if  (= current (:resource page)) "selected" "peer" )
+                    (let [[current-segment & rest]current-path]
+                        (if (= current-segment  (:resource page))
+                          "parent" "unrelated")
+                    )))]
+          (om.dom/li #js {:className classname}
+            (if (= "selected" classname)
+               (dom/div {} (:name page))
+               (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
              )
-        (om.dom/li {}
-            (dom/a #js {:href (format "#%s" (:resource page))} (:name page))
-         )
-        )
+             (if (:pages page)
+                (apply om.dom/ul {}
+                   (om/build-all  #(nav-item {:current current :page % :path (conj path (:resource page)) :current-path
+                                              (if (or (nil? current-path) (empty? current-path) (= "unrelated" classname))
+                                                nil
+                                                (pop current-path)
+                                                )}) (:pages page))
+                 )
+                 nil
+              )
+            )
+
+
+      )
     )
-  )
+
+)
+
+(defn nav-item-old [state]
+  (om/component
+  (let [page (:page state)
+        current-path (:current-path state)
+        path (:path state)
+        current (:current state)]
+        (if  (empty? current-path)
+          (if (= current (:resource page))
+            (om.dom/li #js {:className (if (:pages page) "selected-with-children" "selected")}
+                (dom/div {} (:name page))
+
+                  (if (:pages page)
+                  (apply om.dom/ul {}
+                     (om/build-all  #(nav-item {:current nil :page % :path (conj path (:resource page)) :current-path  current-path}) (:pages page))
+                         )
+                    nil
+                    )
+                 )
+            (om.dom/li {}
+                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
+             )
+          )
+        (let [[current-segment & rest]current-path]
+          (if (= current-segment  (:resource page))
+            (om.dom/li #js {:className "parent"}
+
+                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
+                  (apply om.dom/ul {}
+                     (om/build-all  #(nav-item {:current current :page % :path (conj path current-segment) :current-path  rest}) (:pages page))
+                )
+                 )
+            (om.dom/li {}
+                (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
+             )
+             )
+          )
+        )
+      )
+    )
+
 )
 
 (defn main-menu [state owner]
@@ -40,7 +104,7 @@
         (om.dom/input #js {:type "checkbox" :className "nav-menu"  :id "nav-menu"})
        (om.dom/nav {}
          (apply om.dom/ul {}
-           (om/build-all  #(nav-item {:current (:current state) :page %}) (:pages (:site state)))
+           (om/build-all  #(nav-item {:current (:current state) :page % :path [] :current-path (:path state)}) (:pages (:site state)))
           )
         (om.dom/label #js {:htmlFor  "nav-menu" :className "nav-handle" } "Pages")
       )
@@ -147,7 +211,7 @@
 
   (println  (str "Creating route " prefix (:resource page)))
   (defroute (str prefix (:resource page))[]
-    (load-page (:resource page) (filter #(not (string/blank? %)) (string/split prefix #"/"))))
+    (load-page (:resource page) (into (vector) (filter #(not (string/blank? %)) (string/split prefix #"/")))))
   )
 
 (defn load-routes [pages prefix]

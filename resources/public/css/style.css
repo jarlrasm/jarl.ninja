@@ -63,11 +63,46 @@ body {
 }
 .menu .selected{
   background-color:#FF851B;
-  display: block; padding: 1em;
-  color: #7FDBFF;
+  display: block;
+  padding-top: 0em;
+  padding-bottom: 0em;
+    color: #001f3f;
+}
+.menu .selected div{
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.menu .selected .children{
+  background-color:#AAAAAA;
+  display: block;
+  padding-top: 0em;
+  padding-bottom: 0em;
+
+}
+.menu .parent{
+  display: block;
+  background-color:#AAAAAA;
+  padding: 0em;
+}
+.menu .parent .peer{
+  background-color:#AAAAAA;
+  display: block;
+  padding-top: 0em;
+  padding-bottom: 0em;
+  color: #0074D9;
+}
+.menu .peer .children{
+  display: none;
+    transition: all 0.5s ease-in-out;
+}
+.menu .unrelated .children{
+  display: none;
+    transition: all 0.5s ease-in-out;
 }
 .menu a{
-  display: block; padding: 1em;
+  display: block;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
 .menu a:link {
     color: #7FDBFF;
@@ -80,6 +115,28 @@ body {
 .menu a:hover {
     color: #FF851B;
 }
+.menu .selected .children a:link {
+    color: #001f3f;
+}
+.menu .selected .children a:visited {
+    color: #001f3f;
+}
+
+.menu .selected .children a:hover {
+    color: #001f3f;
+}
+
+.menu .parent a:link {
+    color: #001f3f;
+}
+.menu .parent a:visited {
+    color: #001f3f;
+}
+
+.menu .parent a:hover {
+    color: #001f3f;
+}
+
  .nav-menu{
    display:none;
  }
@@ -151,7 +208,7 @@ body {
     width:100vw;
     height:30px;
   }
-   .menu  ul {
+   .menu > nav > ul {
       max-height: 0;
       position:fixed;
       top:30px;

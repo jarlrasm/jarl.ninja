@@ -81,7 +81,7 @@ body {
 }
 .menu .parent{
   display: block;
-  background-color:#AAAAAA;
+  background-color:#3D9970;
   padding: 0em;
 }
 .menu .parent .peer{
@@ -91,13 +91,18 @@ body {
   padding-bottom: 0em;
   color: #0074D9;
 }
-.menu .peer .children{
-  display: none;
-    transition: all 0.5s ease-in-out;
+.menu .selected ul{
+  max-height: 100px;
+  overflow: hidden;
 }
-.menu .unrelated .children{
-  display: none;
-    transition: all 0.5s ease-in-out;
+.menu .peer  ul {
+  max-height: 0px;
+  overflow:hidden;
+}
+.menu .unrelated ul{
+
+  max-height: 0px;
+  overflow:hidden;
 }
 .menu a{
   display: block;

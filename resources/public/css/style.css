@@ -1,6 +1,9 @@
-/* some style */
+
+html {height:100%}
 body {
     overflow:hidden;
+    height: 100%;
+    min-height: 100%;
 }
 .current {
     position: absolute;
@@ -251,5 +254,18 @@ body {
 
    .nav-menu:checked + nav li {
       visibility: visible;
+    }
+    .nav-menu:checked + nav .selected ul{
+      max-height: 100px;
+      overflow: hidden;
+    }
+    .nav-menu:checked + nav  .peer  ul {
+      max-height: 0px;
+      overflow:hidden;
+    }
+    .nav-menu:checked + nav .unrelated ul{
+
+      max-height: 0px;
+      overflow:hidden;
     }
 }

@@ -1,6 +1,7 @@
 (ns ^:figwheel-always jarl.ninja.core
 (:require-macros [cljs.core.async.macros :refer [go]])
 (:require
+          [jarl.ninja.main-menu :as main-menu]
           [om-tools.dom :as d :include-macros true]
           [om.core :as om]
           [om.dom :as dom]
@@ -14,62 +15,10 @@
           [cljs.core.async :as async :refer [put! chan <!]]
           [clojure.string :as string])
    (:import goog.History))
-(def format goog.string.format)
 (defonce history (History.))
 (enable-console-print!)
 (defonce app-state (atom {:current "" :path [] :document "" :class "current" :site []}));Not happy about the :class
 
-(defn nav-item [state]
-  (om/component
-  (let [page (:page state)
-        current-path (:current-path state)
-        path (:path state)
-        current (:current state)
-        classname (if (nil? current-path)
-                    "children"
-                   (if (empty? current-path)
-                    (if  (= current (:resource page)) "selected" "peer" )
-                    (let [[current-segment & rest]current-path]
-                        (if (= current-segment  (:resource page))
-                          "parent" "unrelated")
-                    )))]
-          (om.dom/li #js {:className classname}
-            (if (= "selected" classname)
-               (dom/div {} (:name page))
-               (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
-             )
-             (if (:pages page)
-                (apply om.dom/ul {}
-                   (om/build-all  #(nav-item {:current current :page % :path (conj path (:resource page)) :current-path
-                                              (if (or (nil? current-path) (empty? current-path) (= "unrelated" classname))
-                                                nil
-                                                (pop current-path)
-                                                )}) (:pages page))
-                 )
-                 nil
-              )
-            )
-
-
-      )
-    )
-
-)
-
-
-(defn main-menu [state owner]
-  (om/component
-    (dom/div  #js {:className "menu"}
-        (om.dom/input #js {:type "checkbox" :className "nav-menu"  :id "nav-menu"})
-       (om.dom/nav {}
-         (apply om.dom/ul {}
-           (om/build-all  #(nav-item {:current (:current state) :page % :path [] :current-path (:path state)}) (:pages (:site state)))
-          )
-        (om.dom/label #js {:htmlFor  "nav-menu" :className "nav-handle" } "Pages")
-      )
-    )
-  )
-)
 
 (defn  content [document owner]
   (reify
@@ -92,7 +41,7 @@
     (om/component
      (dom/div {}
         (om/build content-wrapper state {})
-        (om/build main-menu  state {})
+        (om/build main-menu/menu  state {})
       ))
 )
 

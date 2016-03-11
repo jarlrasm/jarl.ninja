@@ -1,6 +1,6 @@
 (ns ^:figwheel-always jarl.ninja.content
 (:require-macros [cljs.core.async.macros :refer [go]])
-(:require [jarl.ninja.navigation :as navigation]
+(:require [jarl.ninja.lookup :as lookup]
           [om.core :as om]
           [om.dom :as dom]
           [cljs.core.async :as async :refer [chan <!]]
@@ -29,7 +29,7 @@
 (defn load-page! [app-state page path];;Jesus this is ugly
   (let [state (deref app-state)]
     (let [allpages (:pages (:site state))]
-      (let [direction (navigation/get-direction-to state page path)]
+      (let [direction (lookup/get-direction-to state page path)]
       (println  (str "Load page " (string/join "/" path ) "/" page))
         (case direction
           :right  (swap! app-state assoc :class "out-left")
@@ -49,7 +49,7 @@
         (js/setTimeout (fn []
         (go
               (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
-              (let [response (<! (http/get (str "site/markdown/" (:markdown(navigation/get-page allpages page path)))))]
+              (let [response (<! (http/get (str "site/markdown/" (:markdown(lookup/get-page allpages page path)))))]
                 (println  "Loaded")
                 (swap! app-state assoc :document (md->html(:body response)))
                 (swap! app-state assoc :class "current")

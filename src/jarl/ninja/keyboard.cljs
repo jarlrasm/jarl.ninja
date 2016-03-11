@@ -1,12 +1,12 @@
 (ns ^:figwheel-always jarl.ninja.keyboard
-(:require [jarl.ninja.navigation :as navigation]
+(:require [jarl.ninja.lookup :as lookup]
           [jarl.ninja.routing :as routing]
           [clojure.string :as string]))
 
 
 (defn right! [state]
   (let [path (:path state)
-        current (navigation/get-page (:pages (:site state))  (:current state) path)
+        current (lookup/get-page (:pages (:site state))  (:current state) path)
         ]
         (if (not (empty? (:pages current)))
           (let [next (first(:pages current))]
@@ -25,8 +25,8 @@
     )
  )
 (defn up! [state]
-    (let [allpages (navigation/pages-at-path (:pages (:site state)) (:path state))
-          current (navigation/get-page (:pages (:site state))  (:current state) (:path state))]
+    (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
+          current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
           (if next
             (routing/goto! (str (string/join "/" (:path state)) "/" (:resource next) ) )
@@ -38,8 +38,8 @@
       )
 
 (defn down! [state]
-    (let [allpages (navigation/pages-at-path (:pages (:site state)) (:path state))
-          current (navigation/get-page (:pages (:site state))  (:current state) (:path state))]
+    (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
+          current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
           (if next
             (routing/goto!  (str (string/join "/" (:path state)) "/" (:resource next) ) )

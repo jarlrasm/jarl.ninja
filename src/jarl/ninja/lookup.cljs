@@ -1,4 +1,4 @@
-(ns ^:figwheel-always jarl.ninja.navigation
+(ns ^:figwheel-always jarl.ninja.lookup
 )
 
 (defn indexof_page[allpages resource]

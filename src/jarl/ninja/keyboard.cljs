@@ -10,42 +10,39 @@
         ]
         (when-not (empty? (:pages current))
           (let [next (first(:pages current))]
-          (routing/goto!  (str (string/join "/" (:path state)) "/" (:current state) "/" (:resource next) ) )
+          (routing/goto-resource!  (conj (:path state) (:current state))  (:resource next))
           )
         )
 
     )
  )
 (defn left![state]
-  (let [path (:path state)        ]
+  (let [path (:path state) ]
       (when-not (empty? path)
-        (routing/goto!  (string/join "/" path)   )
+        (routing/goto-path!  path)
       )
 
     )
  )
-(defn up! [state]
+
+(defn next-page [state direction]
+
     (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
           current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
-        (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
-          (when next
-            (routing/goto! (str (string/join "/" (:path state)) "/" (:resource next) ) )
+        (last(sort #(direction (:index %1) (:index %2))(filter #(direction (:index %)(:index current))allpages)))
+        )
+  )
+(defn next! [state direction]
+
+        (let [page (next-page state direction)]
+          (when page
+            (routing/goto-resource! (:path state)(:resource page) )
             )
           )
-        )
-      )
+  )
+(defn down! [state] (next! state >) )
 
-(defn down! [state]
-    (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
-          current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
-        (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
-          (when next
-            (routing/goto!  (str (string/join "/" (:path state)) "/" (:resource next) ) )
-            )
-          )
-        )
-      )
-
+(defn up! [state] (next! state <))
 
 (defn key-pressed! [key state]
   (case key

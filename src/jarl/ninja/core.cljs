@@ -26,7 +26,7 @@
         (routing/load-site! app-state (:body response) )
         (println "Routes loaded. Dispatching..")
 
-         (goog.events/listen history goog.history.EventType/NAVIGATE #(routing/goto! (.-token %)))
+         (goog.events/listen history goog.history.EventType/NAVIGATE #(routing/goto-route! (.-token %)))
          (goog.events/listen  js/document "keydown" #( keyboard/key-pressed!(.-keyCode (.-event_ %)) (deref app-state)))
          (doto history (.setEnabled true))
 

@@ -36,4 +36,8 @@
   (load-routes! app-state site "/")
   )
 
-(def goto! secretary/dispatch!)
+(def goto-route! secretary/dispatch!)
+
+(defn goto-path![path] (goto-route! (string/join "/" path)))
+
+(defn goto-resource![path resource] (goto-path! (conj path resource) ))

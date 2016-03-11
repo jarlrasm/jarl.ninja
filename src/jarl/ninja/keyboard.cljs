@@ -8,19 +8,19 @@
   (let [path (:path state)
         current (lookup/get-page (:pages (:site state))  (:current state) path)
         ]
-        (if (not (empty? (:pages current)))
+        (when-not (empty? (:pages current))
           (let [next (first(:pages current))]
           (routing/goto!  (str (string/join "/" (:path state)) "/" (:current state) "/" (:resource next) ) )
           )
-          nil)
+        )
 
     )
  )
 (defn left![state]
   (let [path (:path state)        ]
-      (if(not (empty? path))
+      (when-not (empty? path)
         (routing/goto!  (string/join "/" path)   )
-        nil)
+      )
 
     )
  )
@@ -28,10 +28,8 @@
     (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
           current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
-          (if next
+          (when next
             (routing/goto! (str (string/join "/" (:path state)) "/" (:resource next) ) )
-            nil
-
             )
           )
         )
@@ -41,10 +39,8 @@
     (let [allpages (lookup/pages-at-path (:pages (:site state)) (:path state))
           current (lookup/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
-          (if next
+          (when next
             (routing/goto!  (str (string/join "/" (:path state)) "/" (:resource next) ) )
-            nil
-
             )
           )
         )

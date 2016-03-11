@@ -23,7 +23,7 @@
                (dom/div {} (:name page))
                (dom/a #js {:href (str "#" (string/join "/" path) "/" (:resource page))} (:name page))
              )
-             (if (:pages page)
+             (when (:pages page)
                 (apply om.dom/ul {}
                    (om/build-all  #(nav-item {:current current :page % :path (conj path (:resource page)) :current-path
                                               (if (or (nil? current-path) (empty? current-path) (= "unrelated" classname))
@@ -31,8 +31,7 @@
                                                 (pop current-path)
                                                 )}) (:pages page))
                  )
-                 nil
-              )
+               )
             )
 
 

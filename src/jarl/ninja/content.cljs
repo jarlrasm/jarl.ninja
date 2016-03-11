@@ -26,32 +26,43 @@
     )
   ))
 
-(defn load-page! [app-state page path];;Jesus this is ugly
-  (let [state (deref app-state)]
-    (let [allpages (:pages (:site state))]
-      (let [direction (lookup/get-direction-to state page path)]
-        (case direction
+(defn remove-current-page! [app-state direction]
+          (case direction
           :right  (swap! app-state assoc :class "out-left")
           :left (swap! app-state assoc :class "out-right")
           :up  (swap! app-state assoc :class "out-down")
           :down (swap! app-state assoc :class "out-up"))
-      (swap! app-state assoc :current page)
-      (swap! app-state assoc :path path)
-      (js/setTimeout (fn []
-        (swap! app-state assoc :document "")
+  )
+(defn prepare-new-page! [app-state direction]
+
+        (swap! app-state assoc :document "");Neccesary to clean up?
         (case direction
           :right  (swap! app-state assoc :class "new-right")
           :left (swap! app-state assoc :class "new-left")
           :up  (swap! app-state assoc :class "new-up")
           :down (swap! app-state assoc :class "new-down"))
+  )
+(defn show-new-page![app-state] (swap! app-state assoc :class "current"))
 
-        (js/setTimeout (fn []
+
+(defn load-page! [app-state page path];;Jesus this is ugly
+  (let [state (deref app-state)
+        allpages (:pages (:site state))
+        direction (lookup/get-direction-to state page path)]
+
+      (remove-current-page! app-state direction)
+      (swap! app-state assoc :current page)
+      (swap! app-state assoc :path path)
+      (js/setTimeout (fn []
+        (prepare-new-page! app-state direction)
+
+        (js/setTimeout (fn []; This should be more clever. Problem is if the markdown is loaded to fast,it will enter from the wrong side
         (go
               (println (str "Loading site/markdown/" (:markdown(first (filter #(= page (:resource %)) allpages)))))
               (let [response (<! (http/get (str "site/markdown/" (:markdown(lookup/get-page allpages page path)))))]
                 (println  "Loaded")
                 (swap! app-state assoc :document (md->html(:body response)))
-                (swap! app-state assoc :class "current")
+                (show-new-page! app-state)
               )
          ))
         200))
@@ -59,5 +70,5 @@
       )
 
     )
-  )
-  )
+
+

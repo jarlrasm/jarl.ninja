@@ -16,22 +16,22 @@
     hash
     )
 )
-(defn add-route [app-state page prefix]
+(defn add-route! [app-state page prefix]
 
   (println  (str "Creating route " prefix (:resource page)))
   (defroute (str prefix (:resource page))[]
     (content/load-page! app-state (:resource page) (into (vector) (filter #(not (string/blank? %)) (string/split prefix #"/")))))
   )
 
-(defn load-routes [app-state pages prefix]
+(defn load-routes! [app-state pages prefix]
   (doseq [page (:pages pages)]
-    ( add-route app-state  page prefix)
-    (when (:pages page) (load-routes app-state  page (str prefix (:resource page) "/")))
+    (add-route! app-state  page prefix)
+    (when (:pages page) (load-routes! app-state  page (str prefix (:resource page) "/")))
   )
 )
 
 (defn load-site! [app-state site]
 
   (swap! app-state assoc :site (with-page-index site))
-  (load-routes app-state site "/")
+  (load-routes! app-state site "/")
   )

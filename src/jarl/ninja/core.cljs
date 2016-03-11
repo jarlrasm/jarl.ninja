@@ -199,7 +199,7 @@
       (let [current (get-page allpages (:current state) (:path state))]
         (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
           (if next
-            (load-page (:resource next) (:path state))
+            (secretary/dispatch! (str (string/join "/" (:path state)) (:resource next) ) )
             nil
 
             )
@@ -213,7 +213,7 @@
       (let [current (get-page allpages (:current state) (:path state))]
         (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
           (if next
-            (load-page (:resource next) (:path state))
+            (secretary/dispatch! (str (string/join "/" (:path state)) (:resource next) ) )
             nil
 
             )

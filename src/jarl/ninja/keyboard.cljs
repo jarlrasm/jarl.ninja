@@ -1,6 +1,6 @@
 (ns ^:figwheel-always jarl.ninja.keyboard
 (:require [jarl.ninja.navigation :as navigation]
-          [secretary.core :as secretary]
+          [jarl.ninja.routing :as routing]
           [clojure.string :as string]))
 
 
@@ -10,7 +10,7 @@
         ]
         (if (not (empty? (:pages current)))
           (let [next (first(:pages current))]
-          (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:current state) "/" (:resource next) ) )
+          (routing/goto!  (str (string/join "/" (:path state)) "/" (:current state) "/" (:resource next) ) )
           )
           nil)
 
@@ -19,7 +19,7 @@
 (defn left![state]
   (let [path (:path state)        ]
       (if(not (empty? path))
-        (secretary/dispatch! (string/join "/" path)   )
+        (routing/goto!  (string/join "/" path)   )
         nil)
 
     )
@@ -29,7 +29,7 @@
           current (navigation/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
           (if next
-            (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:resource next) ) )
+            (routing/goto! (str (string/join "/" (:path state)) "/" (:resource next) ) )
             nil
 
             )
@@ -42,7 +42,7 @@
           current (navigation/get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
           (if next
-            (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:resource next) ) )
+            (routing/goto!  (str (string/join "/" (:path state)) "/" (:resource next) ) )
             nil
 
             )

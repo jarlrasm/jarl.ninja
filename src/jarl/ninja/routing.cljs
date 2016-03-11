@@ -35,3 +35,5 @@
   (swap! app-state assoc :site (with-page-index site))
   (load-routes! app-state site "/")
   )
+
+(def goto! secretary/dispatch!)

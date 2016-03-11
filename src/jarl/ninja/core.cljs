@@ -1,10 +1,7 @@
 (ns ^:figwheel-always jarl.ninja.core
 (:require-macros [cljs.core.async.macros :refer [go]])
 (:require
-          [jarl.ninja.main-menu :as main-menu]
           [jarl.ninja.keyboard :as keyboard]
-          [jarl.ninja.navigation :as navigation]
-          [jarl.ninja.content :as content]
           [jarl.ninja.routing :as routing]
           [jarl.ninja.webapp :as webapp]
           [om.core :as om]

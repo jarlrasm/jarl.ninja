@@ -103,13 +103,17 @@
   (:index(first (filter #(= resource (:resource %)) allpages)))
   )
 
-(defn get-page[pages page path];TODO errors?
+(defn pages-at-path [pages path]
   (let [[element & rest] path]
     (if element
-      (get-page (:pages (first (filter #(= element (:resource %)) pages))) page rest)
-      (first (filter #(= page (:resource %)) pages))
+      (pages-at-path  (:pages (first (filter #(= element (:resource %)) pages))) rest)
+      pages
     )
   )
+  )
+
+(defn get-page[pages resource path]
+ (first (filter #(= resource (:resource %)) (pages-at-path pages path)))
 )
 
 (defn get-direction [state page path]
@@ -188,32 +192,37 @@
     (if (:pages page) (load-routes  page (str prefix (:resource page) "/")) nil)
   )
 )
-(defn pages-at-path [pages path]
-  pages;TODO
-  )
-(defn left [](println "Left"))
-(defn right[](println "Right"))
+
+(defn right []
+  (let [state (deref app-state)
+        path (:path state)
+        current (get-page (:pages (:site state))  (:current state) path)
+        ]
+        (if (not (empty? (:pages current)))
+          (let [next (first(:pages current))]
+          (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:current state) "/" (:resource next) ) )
+          )
+          nil)
+
+    )
+ )
+(defn left[]
+  (let [state (deref app-state)
+        path (:path state)
+        ]
+      (if(not (empty? path))
+        (secretary/dispatch! (string/join "/" (:path state))   )
+        nil)
+
+    )
+ )
 (defn up [] ;; TODO Refaktor
   (let [state (deref app-state)]
-    (let [allpages (pages-at-path (:pages (:site state)) (:path state))]
-      (let [current (get-page allpages (:current state) (:path state))]
+    (let [allpages (pages-at-path (:pages (:site state)) (:path state))
+          current (get-page (:pages (:site state))  (:current state) (:path state))]
         (let [next (first(sort #(> (:index %1) (:index %2))(filter #(< (:index %)(:index current))allpages)))]
           (if next
-            (secretary/dispatch! (str (string/join "/" (:path state)) (:resource next) ) )
-            nil
-
-            )
-          )
-        )
-      )
-  ))
-(defn down []
-  (let [state (deref app-state)]
-    (let [allpages (pages-at-path (:pages (:site state)) (:path state))]
-      (let [current (get-page allpages (:current state) (:path state))]
-        (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
-          (if next
-            (secretary/dispatch! (str (string/join "/" (:path state)) (:resource next) ) )
+            (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:resource next) ) )
             nil
 
             )
@@ -221,7 +230,21 @@
         )
       )
   )
-)
+(defn down [] ;; TODO Refaktor
+  (let [state (deref app-state)]
+    (let [allpages (pages-at-path (:pages (:site state)) (:path state))
+          current (get-page (:pages (:site state))  (:current state) (:path state))]
+        (let [next (first(sort #(< (:index %1) (:index %2))(filter #(> (:index %)(:index current))allpages)))]
+          (if next
+            (secretary/dispatch! (str (string/join "/" (:path state)) "/" (:resource next) ) )
+            nil
+
+            )
+          )
+        )
+      )
+  )
+
 (defn key-pressed [key]
   (case key
     37 (left)

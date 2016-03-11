@@ -1,9 +1,10 @@
 (ns ^:figwheel-always jarl.ninja.core
 (:require-macros [cljs.core.async.macros :refer [go]])
 (:require
-          [jarl.ninja.keyboard :as keyboard]
+          [jarl.ninja.navigation :as navigation]
           [jarl.ninja.routing :as routing]
           [jarl.ninja.webapp :as webapp]
+          [jarl.ninja.gestures :as gestures]
           [om.core :as om]
           [goog.events :as events]
           [goog.history.EventType]
@@ -25,11 +26,10 @@
     (let [response (<! (http/get "site/site.json"))]
         (routing/load-site! app-state (:body response) )
         (println "Routes loaded. Dispatching..")
-
          (goog.events/listen history goog.history.EventType/NAVIGATE #(routing/goto-route! (.-token %)))
-         (goog.events/listen  js/document "keydown" #( keyboard/key-pressed!(.-keyCode (.-event_ %)) (deref app-state)))
+         (goog.events/listen  js/document "keydown" #( navigation/key-pressed!(.-keyCode (.-event_ %)) (deref app-state)))
+         (gestures/set-up  (.-body  js/document)  app-state)
          (doto history (.setEnabled true))
-
       )
  )
 

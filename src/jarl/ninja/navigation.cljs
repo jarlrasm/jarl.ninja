@@ -1,4 +1,4 @@
-(ns ^:figwheel-always jarl.ninja.keyboard
+(ns ^:figwheel-always jarl.ninja.navigation
 (:require [jarl.ninja.lookup :as lookup]
           [jarl.ninja.routing :as routing]))
 

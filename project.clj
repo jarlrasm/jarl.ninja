@@ -10,6 +10,7 @@
                  [org.omcljs/om "0.8.8"]
                  [secretary "1.2.3"]
                  [markdown-clj "0.9.77"]
+                 [cljsjs/hammer "2.0.4-5"]
                  [cljs-http "0.1.37"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]

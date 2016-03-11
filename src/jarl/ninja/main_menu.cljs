@@ -1,8 +1,8 @@
 (ns ^:figwheel-always jarl.ninja.main-menu
 (:require
           [om.core :as om]
-          [om.dom :as dom]
-          [clojure.string :as string]))
+          [jarl.ninja.routing :as routing]
+          [om.dom :as dom]))
 
 (defn nav-item [state]
   (om/component
@@ -21,7 +21,7 @@
           (om.dom/li #js {:className classname}
             (if (= "selected" classname)
                (dom/div {} (:name page))
-               (dom/a #js {:href (str "#" (string/join "/" path) "/" (:resource page))} (:name page))
+               (dom/a #js {:href (str "#" (routing/get-route-to-resource path(:resource page)))} (:name page))
              )
              (when (:pages page)
                 (apply om.dom/ul {}

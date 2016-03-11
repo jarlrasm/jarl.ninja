@@ -5,6 +5,8 @@
           [clojure.string :as string]
 ))
 
+(defn get-route-to-resource [path resource] (string/join "/" (conj path resource)))
+(defn get-route-to-path [path]  (string/join "/" path))
 
 (defn with-page-index [hash]
   (if (:pages hash)
@@ -20,6 +22,7 @@
 
   (println  (str "Creating route " prefix (:resource page)))
   (defroute (str prefix (:resource page))[]
+    (println  (str "Load page" prefix (:resource page)))
     (content/load-page! app-state (:resource page) (into (vector) (filter #(not (string/blank? %)) (string/split prefix #"/")))))
   )
 
@@ -38,6 +41,7 @@
 
 (def goto-route! secretary/dispatch!)
 
-(defn goto-path![path] (goto-route! (string/join "/" path)))
+
+(defn goto-path![path] (goto-route! (get-route-to-path path)))
 
 (defn goto-resource![path resource] (goto-path! (conj path resource) ))

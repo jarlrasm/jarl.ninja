@@ -30,7 +30,6 @@
   (let [state (deref app-state)]
     (let [allpages (:pages (:site state))]
       (let [direction (lookup/get-direction-to state page path)]
-      (println  (str "Load page " (string/join "/" path ) "/" page))
         (case direction
           :right  (swap! app-state assoc :class "out-left")
           :left (swap! app-state assoc :class "out-right")

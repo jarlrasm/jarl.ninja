@@ -1,7 +1,6 @@
 (ns ^:figwheel-always jarl.ninja.keyboard
 (:require [jarl.ninja.lookup :as lookup]
-          [jarl.ninja.routing :as routing]
-          [clojure.string :as string]))
+          [jarl.ninja.routing :as routing]))
 
 
 (defn right! [state]

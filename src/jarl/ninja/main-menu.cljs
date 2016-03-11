@@ -4,7 +4,6 @@
           [om.dom :as dom]
           [clojure.string :as string]))
 
-(def format goog.string.format)
 (defn nav-item [state]
   (om/component
   (let [page (:page state)
@@ -22,7 +21,7 @@
           (om.dom/li #js {:className classname}
             (if (= "selected" classname)
                (dom/div {} (:name page))
-               (dom/a #js {:href (format "#%s" (str (string/join "/" path) "/" (:resource page)))} (:name page))
+               (dom/a #js {:href (str "#" (string/join "/" path) "/" (:resource page))} (:name page))
              )
              (if (:pages page)
                 (apply om.dom/ul {}

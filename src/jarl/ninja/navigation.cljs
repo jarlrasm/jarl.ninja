@@ -11,7 +11,7 @@
         ]
         (if (not(empty? (:pages current)))
           (first(:pages current))
-          (println current)
+          nil
         )
 
     )
@@ -78,9 +78,8 @@
   )
 )
 
-(defn overlay [state owner]
-    (om/component
-     (dom/div  #js {:style  #js {:width "100vw" :height "100vh" :top "0" :left "0"} }
+(defn overlay [state component]
+     (dom/div  #js {:className  "overlay" }
         (when-let[page (next-page state >)]
             (dom/a #js {:className "down-button" :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (:name page))
           )
@@ -93,5 +92,7 @@
         (when-let[page (right-page state)]
             (dom/a #js {:className "right-button" :href (str "#" (routing/get-route-to-resource (conj (:path state)(:current state)) (:resource page)))} (:name page))
           )
-      ))
-)
+        (om/build component state {})
+
+      )
+  )

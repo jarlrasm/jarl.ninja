@@ -10,8 +10,8 @@
 (defn main [state owner]
     (om/component
      (dom/div {}
-        (om/build content/animated state {})
-        (om/build main-menu/menu  state {})
-        (om/build navigation/overlay  state {})
-      ))
+      (navigation/overlay state content/animated )
+        (om/build main-menu/menu   state {})
+      )
+     )
 )

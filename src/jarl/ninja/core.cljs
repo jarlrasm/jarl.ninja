@@ -18,7 +18,9 @@
 
 
 (om/root webapp/main app-state
-           {:target (. js/document (getElementById "app"))})
+           {:target (. js/document (getElementById "app"))}
+         )
+
 
 
 

@@ -1,7 +1,31 @@
 (ns ^:figwheel-always jarl.ninja.navigation
 (:require [jarl.ninja.lookup :as lookup]
-          [jarl.ninja.routing :as routing]))
+          [jarl.ninja.routing :as routing]
+          [om.core :as om]
+          [om.dom :as dom]))
 
+
+(defn right-page [state]
+  (let [path (:path state)
+        current (lookup/get-page (:pages (:site state))  (:current state) path)
+        ]
+        (if (not(empty? (:pages current)))
+          (first(:pages current))
+          (println current)
+        )
+
+    )
+  )
+
+(defn left-page [state];
+
+  (let [path (:path state)
+        pages (:pages (:site state))]
+      (when-not (empty? path)
+        (lookup/get-page pages (last path) (pop path))
+      )
+    )
+  )
 
 (defn right! [state]
   (let [path (:path state)
@@ -15,6 +39,7 @@
 
     )
  )
+
 (defn left![state]
   (let [path (:path state) ]
       (when-not (empty? path)
@@ -51,4 +76,22 @@
     40 (down! state)
     nil
   )
+)
+
+(defn overlay [state owner]
+    (om/component
+     (dom/div  #js {:style  #js {:width "100vw" :height "100vh" :top "0" :left "0"} }
+        (when-let[page (next-page state >)]
+            (dom/a #js {:className "down-button" :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (:name page))
+          )
+        (when-let[page (next-page state <)]
+            (dom/a #js {:className "up-button" :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (:name page))
+          )
+        (when-let[page (left-page  state)]
+            (dom/a #js {:className "left-button" :href (str "#" (routing/get-route-to-path (:path state) ))} (:name page))
+          )
+        (when-let[page (right-page state)]
+            (dom/a #js {:className "right-button" :href (str "#" (routing/get-route-to-resource (conj (:path state)(:current state)) (:resource page)))} (:name page))
+          )
+      ))
 )

@@ -81,16 +81,28 @@
 (defn overlay [state component]
      (dom/div  #js {:className  "overlay" }
         (when-let[page (next-page state >)]
-            (dom/a #js {:className "down-button" :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (:name page))
+           (dom/div  #js {:className "down-button" }
+            (dom/a #js {:href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (dom/label nil (:name page)) (dom/div  #js {:className "down-arrow" } ))
+
+            )
           )
         (when-let[page (next-page state <)]
-            (dom/a #js {:className "up-button" :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (:name page))
+           (dom/div  #js {:className "up-button" }
+            (dom/a #js { :href (str "#" (routing/get-route-to-resource (:path state) (:resource page)))} (dom/label nil (:name page)) (dom/div  #js {:className "up-arrow" }))
+
+            )
           )
         (when-let[page (left-page  state)]
-            (dom/a #js {:className "left-button" :href (str "#" (routing/get-route-to-path (:path state) ))} (:name page))
+           (dom/div  #js {:className "left-button" }
+            (dom/a #js {:href (str "#" (routing/get-route-to-path (:path state) ))}  (dom/label nil (:name page)) (dom/div  #js {:className "left-arrow" }))
+
+           )
           )
         (when-let[page (right-page state)]
-            (dom/a #js {:className "right-button" :href (str "#" (routing/get-route-to-resource (conj (:path state)(:current state)) (:resource page)))} (:name page))
+           (dom/div  #js {:className "right-button" }
+            (dom/a #js {:href (str "#" (routing/get-route-to-resource (conj (:path state)(:current state)) (:resource page)))} (dom/label nil (:name page))(dom/div  #js {:className "right-arrow" }))
+
+           )
           )
         (om/build component state {})
 

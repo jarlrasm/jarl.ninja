@@ -1,39 +1,118 @@
 
-  .overlay {
-  }
 .overlay .down-button
 {
-    position:absolute;
-    top:90%;
-    left:50%;
-    z-index: 2;
-  transform: translate(-50%, -50%);
+  position:absolute;
+  top:90%;
+  left:50%;
+  z-index: 2;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+  transform: translatex(-50%);
 }
-
 
 .overlay .up-button
 {
-    position:absolute;
-    top:10%;
-    left:50%;
-    z-index: 2;
-  transform: translate(-50%, -50%);
+  position:absolute;
+  top:10%;
+  left:50%;
+  z-index: 2;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+  transform: translatex(-50%);
 }
 
 .overlay .left-button
 {
-    position:absolute;
-    top:50%;
-    left:10%;
-    z-index: 2;
-  transform: translate(-50%, -50%);
+  position:absolute;
+  top:50%;
+  left:0%;
+  z-index: 2;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+  transform: translatey(-50%);
+  transform: rotate(-90deg);
 }
 
 .overlay .right-button
 {
-    position:absolute;
-    top:50%;
-    left:90%;
-    z-index: 2;
+  position:absolute;
+  top:50%;
+  left:90%;
+  z-index: 2;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+  transform: translatey( -50%);
+  transform: rotate(90deg);
+}
+.overlay .down-button:hover
+{
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+
+.overlay .up-button:hover
+{
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.overlay .left-button:hover
+{
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.overlay .right-button:hover
+{
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+
+.overlay .down-arrow
+{
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 20px 100px 0 100px;
+  border-color: #000000 transparent transparent transparent;
+}
+
+
+.overlay .right-arrow
+{
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 100px 20px 100px;
+  border-color: transparent transparent #000000 transparent;
+}
+
+
+.overlay .left-arrow
+{
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 100px 20px 100px;
+  border-color: transparent transparent #000000 transparent;
+}
+
+
+.overlay .up-arrow
+{
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 100px 20px 100px;
+  border-color: transparent transparent #000000 transparent;
+}
+.overlay label
+{
+  position:absolute;
+  color: #DDDDDD;
+  top:50%;
+  left:50%;
   transform: translate(-50%, -50%);
 }

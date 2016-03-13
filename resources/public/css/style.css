@@ -5,58 +5,79 @@ body {
     height: 100%;
     min-height: 100%;
 }
+.overlay {
+    position: absolute;
+    overflow:hidden;
+}
 .current {
     position: absolute;
-    width: 80%;
-    max-height:100vh;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    top:5%;
     transition: all 0.5s ease-out;
     overflow:hidden;
 }
 .out-left {
     position: absolute;
     left: -100%;
-    width: 80%;
+    width: 90%;
+    height: 90%;
+    top:5%;
     transition: all 0.5s ease-in;
 }
 .new-left {
     position: absolute;
     left: -100%;
     width: 80%;
+    height: 90%;
+    top:5%;
 }
 .out-right {
     position: absolute;
     left: 100%;
     width: 80%;
+    height: 90%;
+    top:5%;
     transition: all 0.5s ease-in;
 }
 .new-right {
     position: absolute;
     left: 100%;
     width: 80%;
+    height: 90%;
+    top:5%;
 }
 .out-up {
     position: absolute;
     top: -100%;
-    max-height:100vh;
-    width: 80%;
+    max-height:90%;
+    left: 5%;
+    width: 90%;
     transition: all 0.5s ease-in;
     overflow:hidden;
 }
 .new-up {
     position: absolute;
     top: -100%;
-    width: 80%;
+    left: 5%;
+    width: 90%;
+    max-height:90%;
 }
 .out-down {
     position: absolute;
     top: 100%;
-    width: 80%;
+    left: 5%;
+    width: 90%;
+    max-height:90%;
     transition: all 0.5s ease-in;
 }
 .new-down {
     position: absolute;
     top: 100%;
-    width: 80%;
+    max-height:90%;
+    left: 5%;
+    width: 90%;
 }
 .menu {
    background-color:#001f3f
@@ -158,26 +179,16 @@ body {
 {
   .menu {
     position:fixed;
-    width:100px;
+    width:5%;
     top:0px;
     bottom:0px;
     left:0px;
   }
-  .current {
-      left: 120px;
+  .overlay {
+      left: 5%;
+      width:95%;
       top: 0px;
-  }
-  .out-up  {
-      left: 120px;
-  }
-  .new-up  {
-      left: 120px;
-  }
-  .out-down  {
-      left: 120px;
-  }
-  .new-down  {
-      left: 120px;
+      height:100%;
   }
   .menu .nav-handle {
     display: none;
@@ -186,33 +197,11 @@ body {
 
 @media (max-width: 650px)
 {
-  .current {
-      left: 10%;
+  .overlay {
+      left: 0%;
+      width:100%;
       top: 30px;
-  }
-  .out-left  {
-      top: 30px;
-  }
-  .new-left  {
-      top: 30px;
-  }
-  .out-right  {
-      top: 30px;
-  }
-  .new-right  {
-      top: 30px;
-  }
-  .out-up  {
-      left: 10%;
-  }
-  .new-up  {
-      left: 10%;
-  }
-  .out-down  {
-      left: 10%;
-  }
-  .new-down  {
-      left: 10%;
+      height:90%;
   }
   .menu {
     position:fixed;

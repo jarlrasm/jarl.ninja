@@ -2,7 +2,7 @@
 .overlay .down-button
 {
   position:absolute;
-  top:90%;
+  bottom:0%;
   left:50%;
   z-index: 2;
   opacity: 0.1;
@@ -13,7 +13,7 @@
 .overlay .up-button
 {
   position:absolute;
-  top:10%;
+  top:0%;
   left:50%;
   z-index: 2;
   opacity: 0.1;
@@ -25,24 +25,22 @@
 {
   position:absolute;
   top:50%;
-  left:0%;
+  left: 0;
   z-index: 2;
   opacity: 0.1;
   transition: all 0.3s ease;
-  transform: translatey(-50%);
-  transform: rotate(-90deg);
+  transform: translatey(-50%)  translatex(-90px) rotate(-90deg);
 }
 
 .overlay .right-button
 {
   position:absolute;
   top:50%;
-  left:90%;
+  right:0;
   z-index: 2;
   opacity: 0.1;
   transition: all 0.3s ease;
-  transform: translatey( -50%);
-  transform: rotate(90deg);
+  transform: translatey(-50%) translatex(90px)  rotate(90deg);
 }
 .overlay .down-button:hover
 {

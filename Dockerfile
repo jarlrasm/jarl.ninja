@@ -4,6 +4,6 @@ RUN curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
 ENV LEIN_ROOT=1
 RUN lein
 COPY . /app
-RUN cd app && lein cljsbuild once && cp -r resources/public/. /usr/share/nginx/html
+RUN cd app && lein cljsbuild once release && cp -r resources/public/. /usr/share/nginx/html
 
 CMD ["nginx", "-g", "daemon off;"]
